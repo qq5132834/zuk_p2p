@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.socket;
+package com.zuk.smartcar.socketserver;
 
 /**
  * @author:  大聊
@@ -23,6 +23,13 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.util.Scanner;
 
+import com.alibaba.fastjson.JSON;
+import com.zuk.smartcar.socket.CommandType;
+import com.zuk.smartcar.socket.CommandTypeEnum;
+import com.zuk.smartcar.socket.command.P2PLinkServerCommand;
+import com.zuk.smartcar.socket.command.P2PReturnMsgCommand;
+import com.zuk.smartcar.socket.command.P2PSendMsgCommand;
+
 public class ClientAndroid {
     private Socket socket;
      
@@ -30,7 +37,7 @@ public class ClientAndroid {
         try {
             System.out.println("正在尝试连接服务端...");
 //            socket = new Socket("183.2.169.127",8090);
-            socket = new Socket("www.baidu.com",80);
+            socket = new Socket("127.0.0.1",8090);
             java.net.InetAddress inetAddress = socket.getLocalAddress();
             java.net.SocketAddress socketAddress = socket.getLocalSocketAddress();
             int localPort = socket.getLocalPort();
@@ -55,19 +62,24 @@ public class ClientAndroid {
             OutputStreamWriter osw  = new OutputStreamWriter(out,"UTF-8");
              
             PrintWriter pw = new PrintWriter(osw,true);
-            TransferData.Data td = new TransferData.Data("android000001","nodemcu000001",1,"0");
-            System.out.println(TransferData.sendData(td));
-            pw.println(TransferData.sendData(td));
-           
+            P2PLinkServerCommand p2pLinkServerCommand = new P2PLinkServerCommand();
+            p2pLinkServerCommand.setMsgFrom("android000001");
+            p2pLinkServerCommand.setServerIP("127.0.0.1");
+            p2pLinkServerCommand.setPort(8090);
+            
+            pw.println(p2pLinkServerCommand.toJSON());
+            
             Scanner scanner = new Scanner(System.in);
             while(true){
                 String message = scanner.nextLine();
-                td.setData(message);
-                String msg = TransferData.sendData(td);
-                System.out.println(msg);
-                pw.println(msg);
+                P2PSendMsgCommand p2pSendMsgCommand = new P2PSendMsgCommand();
+                p2pSendMsgCommand.setMsgFrom("android000001");
+                p2pSendMsgCommand.setToken("mytoken");
+                p2pSendMsgCommand.setMsgTo("nodemcu000001");
+                p2pSendMsgCommand.setMsg(message);
+                pw.println(p2pSendMsgCommand.toJSON());
             }
-            
+             
              
         } catch (Exception e) {
             e.printStackTrace();
@@ -89,8 +101,24 @@ public class ClientAndroid {
                  
                 String message = null;
                 while((message=br.readLine())!=null){
-                    System.out.println(message);
-                }
+//                  System.out.println(message);
+                	try{
+                		CommandType commandType = JSON.parseObject(message,CommandType.class);
+	                	if(commandType.getCommand()==CommandTypeEnum.P2PSendMsg.getCommand()){
+	                		P2PSendMsgCommand p2pSendMsgCommand = JSON.parseObject(message,P2PSendMsgCommand.class);
+	                        String msgFrom = p2pSendMsgCommand.getMsgFrom();
+	                        String msg = p2pSendMsgCommand.getMsg();
+	                        System.out.println("["+msgFrom+"]说:"+msg);
+	                	}
+	                	else if(commandType.getCommand()==CommandTypeEnum.P2PReturnMsg.getCommand()){
+	                		P2PReturnMsgCommand returnMsgCommand = JSON.parseObject(message,P2PReturnMsgCommand.class);
+	                        String msg = returnMsgCommand.getMsg();
+	                        System.out.println("发送："+msg);
+	                	}
+                	}catch(Exception e){
+                		e.printStackTrace();
+                	}
+              }
             } catch (Exception e) {
                 e.printStackTrace();
             }

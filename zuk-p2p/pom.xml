@@ -25,4 +25,12 @@
     <module>zuk-p2p-javacv</module>
   </modules>
   
+  <dependencies>
+		<dependency>
+		    <groupId>com.alibaba</groupId>
+		    <artifactId>fastjson</artifactId>
+		    <version>1.2.44</version>
+		</dependency>
+  </dependencies>
+  
 </project>
