@@ -126,6 +126,7 @@ public class P2PServer {
             host = address.getHostAddress();
             int port = socket.getPort();
             host = host+":"+port;
+            System.out.println("host:"+host);
         }
          
         @Override
@@ -149,12 +150,19 @@ public class P2PServer {
                     bos.write(buffer, 0, count);
                     String message = new String(buffer, "UTF-8");
 					System.out.println("count:"+count +",message:"+message);
+					//如果发送沙漏验证，则过滤
+					if(message.contains("<policy-file-request/>")){
+						String xml = "<?xml version=\"1.0\"?><cross-domain-policy><site-control permitted-cross-domain-policies=\"all\"/><allow-access-from domain=\"*\" to-ports=\"*\"/></cross-domain-policy>\0";
+						pw.print(xml);
+						pw.flush();
+						continue;
+					}
 					sb.append(message);
 					if(sb.toString().contains("\n")){ 
 						st = true;
 						//数据传完了
 						CommandType commandType = JSON.parseObject(message, CommandType.class);
-//						System.out.println(JSON.toJSONString(commandType));
+						System.out.println(JSON.toJSONString(commandType));
 						if(commandType.getCommand()==CommandTypeEnum.P2PLinkServer.getCommand()){
 							//服务器连接命令
 							P2PLinkServerCommand p2pLinkServerCommand = JSON.parseObject(message, P2PLinkServerCommand.class);
