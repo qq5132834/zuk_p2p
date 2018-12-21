@@ -23,6 +23,7 @@
     <module>zuk-p2p-admin-interface</module>
     <module>zuk-p2p-server-interface</module>
     <module>zuk-p2p-javacv</module>
+    <module>zuk-p2p-netty-server</module>
   </modules>
   
   <dependencies>
