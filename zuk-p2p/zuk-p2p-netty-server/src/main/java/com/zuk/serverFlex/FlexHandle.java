@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.zuk.serverFlex.handle;
+package com.zuk.serverFlex;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;

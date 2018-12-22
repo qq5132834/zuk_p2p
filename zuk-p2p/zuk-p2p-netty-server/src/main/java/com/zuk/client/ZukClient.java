@@ -15,8 +15,8 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import java.net.InetSocketAddress;
 
 import com.zuk.server.handle.chat.RequestMessge;
-import com.zuk.serverFlex.handle.FlexDecoder;
-import com.zuk.serverFlex.handle.FlexHandle;
+import com.zuk.serverFlex.FlexDecoder;
+import com.zuk.serverFlex.FlexHandle;
 
 /**
  * @author:  大聊
