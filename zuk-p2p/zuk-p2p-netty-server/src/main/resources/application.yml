@@ -1,0 +1,6 @@
+zuk:
+  p2p:
+    server:
+      port: 1010
+    flex:
+      port: 843

@@ -14,9 +14,9 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 
 import java.net.InetSocketAddress;
 
-import com.zuk.server.handle.chat.RequestMessageDecoder;
-import com.zuk.server.handle.chat.RequestMessageHandle;
 import com.zuk.server.handle.chat.RequestMessge;
+import com.zuk.serverFlex.handle.FlexDecoder;
+import com.zuk.serverFlex.handle.FlexHandle;
 
 /**
  * @author:  大聊
@@ -29,7 +29,7 @@ import com.zuk.server.handle.chat.RequestMessge;
 public class ZukClient {
 	
 	public static void main(String[] args) throws Exception {
-	
+		
 		Bootstrap bootstrap = new Bootstrap();
 		
 		EventLoopGroup group = new NioEventLoopGroup();
@@ -40,31 +40,26 @@ public class ZukClient {
 		bootstrap.handler(new ChannelInitializer<SocketChannel>() {
 			@Override
 			public void initChannel(SocketChannel ch) throws Exception {
-				ch.pipeline().addLast(new RequestMessageDecoder());
-				ch.pipeline().addLast(new RequestMessageHandle());
-				ch.pipeline().addLast(new RequestMessageHandle());
+				ch.pipeline().addLast(new ZukClientResponseDecoder());
+				ch.pipeline().addLast(new ZukClientRequestEncoder());
+				ch.pipeline().addLast(new ZukClientHandler());
 			}
 		});
 		
 		// 连接服务端
-		ChannelFuture connect = bootstrap.connect(new InetSocketAddress("127.0.0.1", 1010));
+		ChannelFuture connect = bootstrap.connect(new InetSocketAddress("127.0.0.1", 843));
 		connect.sync();
 		Channel channel = connect.channel();
 		
 		int i = 0;
 		while(i++<100){
 			Thread.sleep(1000);
-			RequestMessge rm = new RequestMessge();
-			rm.setCmd(3);
-			rm.setModule(5);
-			rm.setData(("client."+i).getBytes());
-			
-			channel.writeAndFlush(rm);
+			channel.writeAndFlush("<policy-file-request/>");
 		}
 		
 		channel.close();
 		
 	}
-
+ 
  
 }
