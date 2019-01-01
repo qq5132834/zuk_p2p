@@ -39,6 +39,8 @@ public class FlexP2PServer {
 	@PostConstruct
 	public void init() throws Exception{
 	
+		logger.info("flex server starting....");
+		
 		EventLoopGroup parentGroup = new NioEventLoopGroup();
 		EventLoopGroup childGroup = new NioEventLoopGroup();
 		server.group(parentGroup, childGroup);
@@ -60,8 +62,8 @@ public class FlexP2PServer {
 		
 		server.bind(port).sync();
 		
-		logger.info("listen port:"+port);
-		
+		logger.info("flex listening port:"+port);
+		logger.info("flex servered.");
 	}
  
 	
