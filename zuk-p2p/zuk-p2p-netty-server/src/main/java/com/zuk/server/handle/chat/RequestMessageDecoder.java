@@ -24,26 +24,83 @@ import com.alibaba.fastjson.JSONObject;
  * @email: 513283439@qq.com
  */
 public class RequestMessageDecoder extends ByteToMessageDecoder{
-
+	
+	/***
+	 * +-----------------------------------------------------------------
+	 * | 包头(int)4 | 模块(int)4  | 命令(int)4  | 数据长度(int)4  | byte[]
+	 * +-----------------------------------------------------------------
+	 */
+ 
+	private static int BASE_LENTH = 4 + 4 + 4 + 4;
+	
 	private Logger logger = LoggerFactory.getLogger(RequestMessageDecoder.class);
 	
 	@Override
 	protected void decode(ChannelHandlerContext cxt, ByteBuf byteBuf, List<Object> list) throws Exception {
 		
-		int len = byteBuf.readableBytes();
-		logger.info("RequestMessageDecoder.decode.len:"+len);
-		if(len>0){
-			byte[] data = new byte[len];
-			byteBuf.readBytes(data);
-			String str = new String(data);
-			logger.info("RequestMessageDecoder.decode.str:"+str);
-			RequestMessge msg = JSONObject.parseObject(str, RequestMessge.class);
-			logger.info("RequestMessageDecoder.decode.msg:"+JSON.toJSONString(msg));
-			list.add(msg);
+		logger.info("RequestMessageDecoder.decode.start.开始解码请求消息");
+		
+		while(true){
+			if(byteBuf.readableBytes() >= BASE_LENTH){
+				//第一个可读数据包的起始位置
+				int beginIndex = 0;
+				
+				while(true) {
+					//包头开始游标点
+					beginIndex = byteBuf.readerIndex();
+					
+					//标记初始读游标位置
+					byteBuf.markReaderIndex();
+					if (byteBuf.readInt() == Constants.HEADER_FLAG) {
+						break;
+					}
+					//未读到包头标识略过一个字节
+					byteBuf.resetReaderIndex();
+					byteBuf.readByte();
+					
+					//不满足
+					if(byteBuf.readableBytes() < BASE_LENTH){
+						return ;
+					}
+				}
+				
+				int module = byteBuf.readInt(); //读取模块号
+				int cmd = byteBuf.readInt();	//获取命令号
+				int lenth = byteBuf.readInt();	//获取数据长度
+				
+				if(lenth < 0 ){
+					cxt.channel().close();
+				}
+				
+				//数据包还没到齐
+				if(byteBuf.readableBytes() < lenth){
+					byteBuf.readerIndex(beginIndex);
+					return ;
+				}
+ 
+				//读数据部分
+				byte[] data = new byte[lenth];
+				byteBuf.readBytes(data);
+				
+				logger.info("data-str-server:"+new String(data));
+				
+				RequestMessge message = new RequestMessge();
+				message.setModule(module);
+				message.setCmd(cmd);
+				message.setData(data);
+				
+				list.add(message);
+				
+				logger.info("RequestMessageDecoder.decode.end.结束解码");
+				
+			}
+			else{
+				break;
+			}
 		}
-		else{
-			logger.info("byteBuf lenght is zero.");
-		}
+		
+		//数据不完整
+		return;
 		
 	}
 
