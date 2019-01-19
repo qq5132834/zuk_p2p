@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.zuk.server.handle.p2p;
+package com.zuk.server.handle.p2p.smartCat;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -11,6 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.zuk.server.handle.RequestMessage;
 import com.zuk.server.handle.ResponseMessage;
+import com.zuk.server.handle.p2p.Ip2pHandle;
 import com.zuk.server.utils.Constants;
 import com.zuk.server.utils.ModuleEnum;
 
