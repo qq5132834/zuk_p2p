@@ -9,6 +9,11 @@ import io.netty.channel.ChannelHandlerContext;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.stereotype.Service;
+
 import com.zuk.server.handle.RequestMessage;
 import com.zuk.server.handle.ResponseMessage;
 import com.zuk.server.handle.p2p.Ip2pHandle;
@@ -23,8 +28,10 @@ import com.zuk.server.utils.ModuleEnum;
  * @date:  2019年1月19日 下午3:30:17
  * @email: 513283439@qq.com
  */
-public class P2PSmartCarHandle implements Ip2pHandle{
+@Service
+public class P2PSmartCarHandle implements Ip2pHandle, InitializingBean{
 
+	private Logger logger = LoggerFactory.getLogger(P2PSmartCarHandle.class);
 	public static Map<String,Channel> concurrentHashMap = new ConcurrentHashMap<String, Channel>();
 
 	@Override
@@ -46,8 +53,18 @@ public class P2PSmartCarHandle implements Ip2pHandle{
 		return responseMessage;
 	}
 
- 
-	
+	@Override
+	public Ip2pHandle isHit(int module) {
+		if(ModuleEnum.P2P_SMART_CAR.getModule()==module){
+			return this;
+		}
+		return null;
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		logger.info("init.P2PSmartCarHandle");
+	}
  
 
 }
