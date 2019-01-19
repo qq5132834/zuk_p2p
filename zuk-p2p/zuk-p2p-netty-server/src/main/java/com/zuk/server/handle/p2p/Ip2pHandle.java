@@ -20,6 +20,6 @@ public interface Ip2pHandle {
 	
 	public Ip2pHandle isHit(int module);
 	
-	public ResponseMessage handleMsg(RequestMessage requestMessage, ChannelHandlerContext cxt); 
+	public void handleMsg(RequestMessage requestMessage, ChannelHandlerContext cxt); 
 	
 }

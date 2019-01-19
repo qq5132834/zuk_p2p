@@ -35,7 +35,7 @@ public class P2PSmartCarHandle implements Ip2pHandle, InitializingBean{
 	public static Map<String,Channel> concurrentHashMap = new ConcurrentHashMap<String, Channel>();
 
 	@Override
-	public ResponseMessage handleMsg(RequestMessage requestMessage,
+	public void handleMsg(RequestMessage requestMessage,
 			ChannelHandlerContext cxt) {
 		
 		byte[] bytes = requestMessage.getData();
@@ -50,7 +50,6 @@ public class P2PSmartCarHandle implements Ip2pHandle, InitializingBean{
 		Channel channel = cxt.channel();
 		channel.writeAndFlush(responseMessage);
 		
-		return responseMessage;
 	}
 
 	@Override
