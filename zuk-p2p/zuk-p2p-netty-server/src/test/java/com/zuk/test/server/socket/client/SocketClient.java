@@ -12,7 +12,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 
-import com.zuk.server.handle.chat.Constants;
+import com.zuk.server.utils.Constants;
 
 /**
  * @author:  大聊

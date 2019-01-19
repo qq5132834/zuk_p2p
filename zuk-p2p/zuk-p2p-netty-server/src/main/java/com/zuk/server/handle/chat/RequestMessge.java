@@ -12,7 +12,7 @@ package com.zuk.server.handle.chat;
  * @email: 513283439@qq.com
  */
 public class RequestMessge {
-	
+
 	private Integer module;
 	private Integer cmd;
 	private byte[] data;
