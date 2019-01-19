@@ -20,9 +20,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.zuk.server.handle.chat.RequestMessageDecoder;
-import com.zuk.server.handle.chat.RequestMessageHandle;
-import com.zuk.server.handle.chat.ResponseMessageEncoder;
+import com.zuk.server.handle.RequestMessageDecoder;
+import com.zuk.server.handle.RequestMessageHandle;
+import com.zuk.server.handle.ResponseMessageEncoder;
 
 /**
  * @author:  大聊

@@ -11,7 +11,7 @@ package com.zuk.server.utils;
  * @date:  2019年1月19日 下午2:57:34
  * @email: 513283439@qq.com
  */
-public enum P2PSmartCarCmdEnum {
+public enum CmdP2PSmartCarEnum {
 
 	START(1,"启动"),
 	STOP(2,"停止"),
@@ -24,7 +24,7 @@ public enum P2PSmartCarCmdEnum {
 	private int cmd;
 	private String desc;
 	
-	private P2PSmartCarCmdEnum(int cmd,String desc){
+	private CmdP2PSmartCarEnum(int cmd,String desc){
 		this.cmd = cmd;
 		this.desc = desc;
 	}

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.zuk.server.handle.chat;
+package com.zuk.server.handle;
 
 import java.nio.charset.Charset;
 
@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.servlet.server.Session;
 
 import com.alibaba.fastjson.JSON;
+import com.zuk.server.handle.p2p.Ip2pHandleFactory;
 import com.zuk.server.utils.Constants;
 
 /**
@@ -24,27 +25,17 @@ import com.zuk.server.utils.Constants;
  * @date:  2018年12月22日 上午12:01:12
  * @email: 513283439@qq.com
  */
-public class RequestMessageHandle extends SimpleChannelInboundHandler<RequestMessge> {
+public class RequestMessageHandle extends SimpleChannelInboundHandler<RequestMessage> {
 
 	private Logger logger = LoggerFactory.getLogger(RequestMessageHandle.class);
 	
 	@Override
-	protected void channelRead0(ChannelHandlerContext cxt, RequestMessge requestMessage)
+	protected void channelRead0(ChannelHandlerContext cxt, RequestMessage requestMessage)
 			throws Exception {
 		
 		logger.info("RequestMessageHandle.channelRead0.requestMessage:"+JSON.toJSONString(requestMessage));
 		
-		ResponseMsg response =  new ResponseMsg();
-		response.setCmd(requestMessage.getCmd());
-		response.setModule(requestMessage.getModule());
-		response.setCode(Constants.SUCCESS_CODE);
-		
-		Charset charset = Charset.forName("UTF-8");
-		String s = "hi,你好";
-		response.setData(s.getBytes(charset));
-		
-		Channel channel = cxt.channel();
-		channel.writeAndFlush(response);
+		Ip2pHandleFactory.handleP2PHandle(requestMessage, cxt);
  
 	}
 

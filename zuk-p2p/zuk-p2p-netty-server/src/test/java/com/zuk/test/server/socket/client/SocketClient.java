@@ -13,6 +13,7 @@ import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 
 import com.zuk.server.utils.Constants;
+import com.zuk.server.utils.ModuleEnum;
 
 /**
  * @author:  大聊
@@ -40,9 +41,7 @@ public class SocketClient {
             //包头
     		buffer.writeInt(Constants.HEADER_FLAG);
     		//module
-    		buffer.writeInt(100);
-    		//cmd
-    		buffer.writeInt(1000);
+    		buffer.writeInt(ModuleEnum.P2P_SMART_CAR.getModule());
     		String str = "hello 平安.";
     		//长度
     		Charset charset = Charset.forName("UTF-8");
@@ -61,17 +60,17 @@ public class SocketClient {
             DataInputStream dataInputStream = new DataInputStream(inputStream);
             int header = dataInputStream.readInt();
             int module = dataInputStream.readInt();
-            int cmd = dataInputStream.readInt();
-            int code = dataInputStream.readInt();
+//            int cmd = dataInputStream.readInt();
+//            int code = dataInputStream.readInt();
             int len = dataInputStream.readInt();
             byte[] b = new byte[len];
 			dataInputStream.read(b);
 			System.out.println("header:"+header);
 			System.out.println("module:"+module);
-			System.out.println("cmd:"+cmd);
-			System.out.println("code:"+code);
+//			System.out.println("cmd:"+cmd);
+//			System.out.println("code:"+code);
 			System.out.println("len:"+len);
-			System.out.println("str:"+new String(b,charset));
+			System.out.println("str:"+new String(b));
             
 //            //关闭相对应的资源
             inputStream.close();

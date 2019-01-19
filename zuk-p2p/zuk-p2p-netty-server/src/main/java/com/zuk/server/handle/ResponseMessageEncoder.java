@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.zuk.server.handle.chat;
+package com.zuk.server.handle;
 
 import javax.print.DocFlavor.BYTE_ARRAY;
 
@@ -23,12 +23,12 @@ import com.zuk.server.utils.Constants;
  * @date:  2018年12月22日 上午12:07:59
  * @email: 513283439@qq.com
  */
-public class ResponseMessageEncoder extends MessageToByteEncoder<ResponseMsg>{
+public class ResponseMessageEncoder extends MessageToByteEncoder<ResponseMessage>{
 
 /**
  * 
  * +-----------------------------------------------------------------------------------
- * | 包头(int)4 | 模块(int)4  | 命令(int)4  |  结果码 (int)4   | 数据长度(int)4  | byte[]
+ * | 包头(int)4 | 模块(int)4 | 数据长度(int)4  | byte[]
  * +-----------------------------------------------------------------------------------
  * 
  * 编码返回
@@ -37,24 +37,20 @@ public class ResponseMessageEncoder extends MessageToByteEncoder<ResponseMsg>{
 	private Logger logger = LoggerFactory.getLogger(ResponseMessageEncoder.class);
 	
 	@Override
-	protected void encode(ChannelHandlerContext cxt, ResponseMsg responseMsg, ByteBuf byteBuf) throws Exception {
+	protected void encode(ChannelHandlerContext cxt, ResponseMessage responseMsg, ByteBuf byteBuf) throws Exception {
 	 
-		int len = 0;
-		if(responseMsg.getData()!=null){
-			len = responseMsg.getData().length;
-		}
-		
-		byteBuf.writeInt(Constants.HEADER_FLAG);
+		//包头
+		byteBuf.writeInt(responseMsg.getHeaderFlag());
+		//模块
 		byteBuf.writeInt(responseMsg.getModule());
-		byteBuf.writeInt(responseMsg.getCmd());
-		byteBuf.writeInt(responseMsg.getCode());
-		if(len<=0){
-			byteBuf.writeInt(len);
-		}
-		else{
-			byteBuf.writeInt(len);
+		//结果集长度
+		byteBuf.writeInt(responseMsg.getDataLenght());
+		
+		if(responseMsg.getDataLenght()>0){
+			//结果集
 			byteBuf.writeBytes(responseMsg.getData());
 		}
+		 
 		
 	}
 

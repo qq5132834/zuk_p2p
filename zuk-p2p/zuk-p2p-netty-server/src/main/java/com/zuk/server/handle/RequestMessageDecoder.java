@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.zuk.server.handle.chat;
+package com.zuk.server.handle;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -28,11 +28,11 @@ public class RequestMessageDecoder extends ByteToMessageDecoder{
 	
 	/***
 	 * +-----------------------------------------------------------------
-	 * | 包头(int)4 | 模块(int)4  | 命令(int)4  | 数据长度(int)4  | byte[]
+	 * | 包头(int)4 | 模块(4) | 数据长度(int)4 | byte[]  
 	 * +-----------------------------------------------------------------
 	 */
  
-	private static int BASE_LENTH = 4 + 4 + 4 + 4;
+	private static int BASE_LENTH = 4 + 4 + 4 ;
 	
 	private Logger logger = LoggerFactory.getLogger(RequestMessageDecoder.class);
 	
@@ -66,10 +66,9 @@ public class RequestMessageDecoder extends ByteToMessageDecoder{
 				}
 				
 				int module = byteBuf.readInt(); //读取模块号
-				int cmd = byteBuf.readInt();	//获取命令号
 				int lenth = byteBuf.readInt();	//获取数据长度
 				
-				if(lenth < 0 ){
+				if(lenth <= 0 ){
 					cxt.channel().close();
 				}
 				
@@ -85,9 +84,10 @@ public class RequestMessageDecoder extends ByteToMessageDecoder{
 				
 				logger.info("data-str-server:"+new String(data));
 				
-				RequestMessge message = new RequestMessge();
+				RequestMessage message = new RequestMessage();
+				message.setHeaderFlag(Constants.HEADER_FLAG);
 				message.setModule(module);
-				message.setCmd(cmd);
+				message.setLenght(data.length);
 				message.setData(data);
 				
 				list.add(message);

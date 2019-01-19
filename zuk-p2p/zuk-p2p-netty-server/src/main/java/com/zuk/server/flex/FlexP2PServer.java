@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.zuk.serverFlex;
+package com.zuk.server.flex;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelInitializer;
