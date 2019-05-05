@@ -29,8 +29,8 @@ public class ClientAndroid {
     public ClientAndroid(){
         try {
             System.out.println("正在尝试连接服务端...");
-//            socket = new Socket("183.2.169.127",8090);
-            socket = new Socket("www.baidu.com",80);
+            socket = new Socket("127.0.0.1",8090);
+//            socket = new Socket("www.baidu.com",80);
             java.net.InetAddress inetAddress = socket.getLocalAddress();
             java.net.SocketAddress socketAddress = socket.getLocalSocketAddress();
             int localPort = socket.getLocalPort();

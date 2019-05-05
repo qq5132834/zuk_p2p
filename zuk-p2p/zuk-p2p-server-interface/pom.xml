@@ -11,5 +11,13 @@
   <artifactId>zuk-p2p-server-interface</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>zuk-p2p-server-interface</name>
+  
+  <dependencies>
+		<dependency>
+		    <groupId>org.apache.httpcomponents</groupId>
+		    <artifactId>httpclient</artifactId>
+		    <version>4.3</version>
+		</dependency>
+  </dependencies>
  
 </project>

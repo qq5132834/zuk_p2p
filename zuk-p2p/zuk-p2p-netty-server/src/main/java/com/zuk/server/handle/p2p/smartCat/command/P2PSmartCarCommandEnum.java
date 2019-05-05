@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.zuk.server.utils;
+package com.zuk.server.handle.p2p.smartCat.command;
 
 /**
  * @author:  大聊
@@ -11,20 +11,26 @@ package com.zuk.server.utils;
  * @date:  2019年1月19日 下午2:57:34
  * @email: 513283439@qq.com
  */
-public enum CmdP2PSmartCarEnum {
+public enum P2PSmartCarCommandEnum {
 
+	//控制命令
 	START(1,"启动"),
 	STOP(2,"停止"),
 	FORWARD(3,"前进"),
 	BACK(4,"向后"),
 	LEFT(5,"向左"),
-	RIGHT(6,"向右")
+	RIGHT(6,"向右"),
+	
+	//路由器操作命令
+	LINK_ROUTER(7,"连接路由器")
+	
+	
 	;
 	
 	private int cmd;
 	private String desc;
 	
-	private CmdP2PSmartCarEnum(int cmd,String desc){
+	private P2PSmartCarCommandEnum(int cmd,String desc){
 		this.cmd = cmd;
 		this.desc = desc;
 	}
