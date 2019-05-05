@@ -30,7 +30,8 @@ import com.p2p.MessageData;
  */
 public class ZukServerHandler  extends SimpleChannelInboundHandler<MessageData> {
 	 
-	public static Map<String, Channel> mapChannels = new ConcurrentHashMap<String, Channel>();
+//	public static Map<String, Channel> mapChannels = new ConcurrentHashMap<String, Channel>();
+	public static Map<String, IoSession> mapIoSessions = new ConcurrentHashMap<String, IoSession>();
 	
 	@Override
     public void handlerAdded(ChannelHandlerContext ctx) throws Exception {  // (2)
@@ -42,15 +43,21 @@ public class ZukServerHandler  extends SimpleChannelInboundHandler<MessageData> 
     }
 	
     @Override
-    public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {  // (3)
-		// Channel incoming = ctx.channel();
-		
-		// Broadcast a message to multiple Channels
-		// channels.writeAndFlush("[SERVER] - " + incoming.remoteAddress() + " 离开\n");
- 
-		// A closed Channel is automatically removed from ChannelGroup,
-		// so there is no need to do "channels.remove(ctx.channel());"
+    public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
+    	
+    	System.out.println("handlerRemoved:"+ctx.channel().remoteAddress().toString());
+    	for(Map.Entry<String, IoSession> entry : mapIoSessions.entrySet()){
+    		String k = entry.getKey();
+    		IoSession ioSession = entry.getValue();
+    		if(ctx.channel().remoteAddress().toString().contains(ioSession.getAddressAndPort())){
+    			mapIoSessions.remove(k);
+    			System.out.println("remove.key:"+k);
+    			break;
+    		}
+    	}
     }
+    	
+    
 	
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, MessageData msg)
@@ -59,32 +66,35 @@ public class ZukServerHandler  extends SimpleChannelInboundHandler<MessageData> 
 		System.out.println("msg--:"+JSON.toJSONString(msg));
 		
 		final Channel channel = ctx.channel();
-//		channel.writeAndFlush(msg);
-//		IoSession session = ChannelUtils.getSessionBy(channel);
-		
 		String from = msg.getFrom();
 		String to = msg.getTo();
 		
-		if(mapChannels.get(from)==null){
-			System.out.println("from "+from + " is not on line.");
-			mapChannels.put(from, channel);
+		if(mapIoSessions.get(from)==null){
+			System.out.println("添加"+from+"的channel到map中");
+			IoSession value = new IoSession();
+			value.setAddressAndPort(channel.remoteAddress().toString());
+			value.setUserid(from);
+			value.setChannel(channel);
+			mapIoSessions.put(from, value);
 		}
-		if(mapChannels.get(to)==null){
-			Channel fromChannel = mapChannels.get(from);
+		
+		if(mapIoSessions.get(to)==null){
+			
 			MessageData res = new MessageData();
 			res.setCmd(MessageCmdEnum.SEND_FAIL.getCmd());
 			res.setFrom("server");
 			res.setTo(from);
 			res.setData(to+"不在线，消息发送失败");
-			fromChannel.writeAndFlush(res);
+			IoSession ioSession = mapIoSessions.get(from);
+			ioSession.getChannel().writeAndFlush(res);
 		}
 		else{
 			
 			//向接收端发送消息
-			mapChannels.get(to).writeAndFlush(msg);
+			mapIoSessions.get(to).getChannel().writeAndFlush(msg);
 			
 			//带消息回执
-			Channel fromChannel = mapChannels.get(from);
+			Channel fromChannel = mapIoSessions.get(from).getChannel();
 			MessageData res = new MessageData();
 			res.setCmd(MessageCmdEnum.SEND_SUCCESS.getCmd());
 			res.setFrom("server");
@@ -92,7 +102,7 @@ public class ZukServerHandler  extends SimpleChannelInboundHandler<MessageData> 
 			res.setData(to+"在线，消息发送成功");
 			fromChannel.writeAndFlush(res);
 		}
-//		
+		
 //		for (Map.Entry<String, Channel>  entry: mapChannels.entrySet()) {
 //			System.out.println("user:" + entry.getKey());
 //			entry.getValue().writeAndFlush("hello.world.");
