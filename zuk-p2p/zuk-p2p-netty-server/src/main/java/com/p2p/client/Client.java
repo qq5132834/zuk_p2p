@@ -23,6 +23,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import com.alibaba.fastjson.JSON;
+import com.p2p.MessageCmdEnum;
 import com.p2p.MessageData;
 import com.p2p.MessageDataUtils;
 
@@ -144,8 +145,17 @@ public class Client implements ActionListener {
 									String result = new String(buffer,3,position-1);
 									System.out.println("result:"+result);
 									MessageData msgres = JSON.parseObject(result, MessageData.class);
-									info.append(msgres.getFrom() + ":"+ msgres.getData());
-				                    info.append("\n");
+									if(msgres.getCmd()==MessageCmdEnum.SEND_FAIL.getCmd()){
+										System.out.println("消息发送失败");
+									}
+									else if(msgres.getCmd()==MessageCmdEnum.SEND_SUCCESS.getCmd()){
+										System.out.println("消息发送成功");
+									}
+									else if(msgres.getCmd()==MessageCmdEnum.CMD_SEND.getCmd()){
+										info.append(msgres.getFrom() + ":"+ msgres.getData());
+					                    info.append("\n");
+									}
+									
 				                    position = 0;
 									break;
 								}
@@ -182,6 +192,7 @@ public class Client implements ActionListener {
  
 		try {
 			MessageData data = new MessageData();
+			data.setCmd(MessageCmdEnum.CMD_SEND.getCmd());
 			data.setFrom(this.fromText.getText());
 			data.setTo(this.toText.getText());
 			data.setData(msg);

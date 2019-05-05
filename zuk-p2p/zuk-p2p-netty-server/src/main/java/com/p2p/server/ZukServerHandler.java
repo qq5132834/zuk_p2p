@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSON;
+import com.p2p.MessageCmdEnum;
 import com.p2p.MessageData;
 
 /**
@@ -29,22 +30,15 @@ import com.p2p.MessageData;
  */
 public class ZukServerHandler  extends SimpleChannelInboundHandler<MessageData> {
 	 
-	
-	public static Map<String,String> map = new ConcurrentHashMap<String, String>();
-	public static ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
-	
 	public static Map<String, Channel> mapChannels = new ConcurrentHashMap<String, Channel>();
 	
 	@Override
     public void handlerAdded(ChannelHandlerContext ctx) throws Exception {  // (2)
 		
 		Channel incoming = ctx.channel();
-		// Broadcast a message to multiple Channels
-		// channels.writeAndFlush("[SERVER] - " + incoming.remoteAddress() + " 加入\n");
 		String address = incoming.remoteAddress().toString();
 		System.out.println("handlerAdded:"+address);
-		map.put(address, "");
-		channels.add(incoming);
+		
     }
 	
     @Override
@@ -78,9 +72,10 @@ public class ZukServerHandler  extends SimpleChannelInboundHandler<MessageData> 
 		if(mapChannels.get(to)==null){
 			Channel fromChannel = mapChannels.get(from);
 			MessageData res = new MessageData();
+			res.setCmd(MessageCmdEnum.SEND_FAIL.getCmd());
 			res.setFrom("server");
 			res.setTo(from);
-			res.setData(to+" is not online");
+			res.setData(to+"不在线，消息发送失败");
 			fromChannel.writeAndFlush(res);
 		}
 		else{
@@ -91,9 +86,10 @@ public class ZukServerHandler  extends SimpleChannelInboundHandler<MessageData> 
 			//带消息回执
 			Channel fromChannel = mapChannels.get(from);
 			MessageData res = new MessageData();
+			res.setCmd(MessageCmdEnum.SEND_SUCCESS.getCmd());
 			res.setFrom("server");
 			res.setTo(from);
-			res.setData(to+" yes");
+			res.setData(to+"在线，消息发送成功");
 			fromChannel.writeAndFlush(res);
 		}
 //		
