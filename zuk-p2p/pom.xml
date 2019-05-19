@@ -17,7 +17,7 @@
     <module>zuk-p2p-parent</module>
     <module>zuk-p2p-common</module>
     <module>zuk-p2p-server</module>
-    <module>zuk-p2p-client</module>
+    <module>zuk-web3j</module>
     <module>zuk-p2p-server-interface</module>
     <module>zuk-p2p-javacv</module>
     <module>zuk-p2p-netty-server</module>
